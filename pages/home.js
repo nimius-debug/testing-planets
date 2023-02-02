@@ -3,32 +3,34 @@ import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '@/styles/Home.module.css'
 import { useEffect,useState } from 'react'
-const inter = Inter({ subsets: ['latin'] })
+import { excersiceOptions,fetchData } from '@/utils/fetchData'
 
-export default function Home() {
-  const [data,setData] = useState();
 
-  useEffect(() => {
-    const url = 'https://exercisedb.p.rapidapi.com/exercises/bodyPart/cardio';
+export default function Home() {    
+    const url = 'https://exercisedb.p.rapidapi.com/exercises';
+    const workout = [ "3/4 sit-up",
+    "air bike",
+    "all fours squad stretch",
+    "alternate heel touchers",
+    "ankle circles",
+]
+    const [data, setData] = useState([])
 
-    const options = {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': '182da900e1mshd23e2dd5ebde7d4p17cd44jsnad17788cd053',
-        'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
-      }
-    };
-    fetch(url, options)
-	    .then(res => res.json())
-	    .then(res => {
-        console.log(res)
-        setData(res)
-      })
-	    .catch(err => {
-        console.error('error:' + err)
-      });
-
-  },[])
+    const handleSearch = async () => {
+        if (workout){
+            const exercisesData = await fetchData(url,excersiceOptions)
+            console.log(exercisesData)
+            const searchedExercise = exercisesData.filter( e => workout.includes(e.name))
+                // console.log(s)
+                
+            console.log(searchedExercise);
+       
+        
+        setData(searchedExercise);
+        }
+    }
+    
+ 
 
   return (
     <>
@@ -39,6 +41,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <button onClick={handleSearch}>
+            search
+        </button>
         {
           data && data.map((d)=>{
             return(
